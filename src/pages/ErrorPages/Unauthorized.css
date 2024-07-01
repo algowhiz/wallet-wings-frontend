@@ -1,0 +1,40 @@
+.unauthorized-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.error-code {
+    font-size: 9rem; /* Adjust the font size as needed */
+    margin-bottom: 0.2rem; 
+    margin-top: 0px;/* Margin below the "403" text */
+}
+
+.unauthorized-text {
+    text-align: center;
+    margin-bottom: 1rem; /* Margin below each paragraph */
+    font-size: 3rem;
+}
+
+.unauthorized-text-2{
+    display: flex ;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.unauthorized-text-2{
+    font-size: 1.4rem;
+}
+
+a {
+    text-decoration: none; 
+    color: rgb(139, 133, 133); 
+    
+}
+
+a:hover {
+    text-decoration: underline; 
+}

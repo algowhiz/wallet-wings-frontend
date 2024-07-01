@@ -1,0 +1,30 @@
+/* Base styles */
+body {
+  /* Example full height */
+   background-color: #1b273d; /* Example background color */
+   color: white;
+   font-family: sans-serif;
+ }
+
+
+
+@media (min-width: 900px) {
+  .app-container {
+    position: relative; /* Ensure .formContainer can be positioned within it */
+    width: 27vw; /* Full width of the viewport */
+    height: 90vh; /* 90% of the viewport height */
+    margin: 0 auto; /* Center horizontally */
+    overflow-x: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    border: 2px solid white;
+    border-radius: 30px;
+    margin-top: 5vh;
+    padding: 1rem;
+  }
+  
+  .app-container::-webkit-scrollbar {
+    display: none;
+  }
+  
+}
