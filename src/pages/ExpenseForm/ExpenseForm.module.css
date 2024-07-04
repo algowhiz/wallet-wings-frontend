@@ -1,17 +1,19 @@
-/* Home.module.css */
-
 .formContainer {
-  background-color:  #001f3f;
-  /* Dark blue */
-  position: fixed;
+  background-color: #11253b;
+  position: absolute;
   bottom: 0;
   width: 100%;
-  left: 0;
+  max-width: 500px;
+  left: 50%;
+  transform: translateX(-50%);
   border-radius: 0.25rem;
   overflow-y: hidden;
   margin: 0;
+  z-index: 100;
+  transition: bottom 1s ease-out;
 }
-.innerFormContainer{
+
+.innerFormContainer {
   padding: 0.8rem;
 }
 
@@ -19,7 +21,6 @@
   font-size: 1.25rem;
   margin-bottom: 1rem;
   color: #7fdbff;
-  /* Light blue */
   display: flex;
   justify-content: center;
 }
@@ -34,18 +35,29 @@
   font-weight: bold;
   margin-bottom: 0.5rem;
   color: #7fdbff;
-  /* Light blue */
 }
 
 .input {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #0074d9;
-  /* Blue */
   border-radius: 0.25rem;
   width: 90%;
   padding: 0.5rem;
   color: #001f3f;
   outline: none;
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.input::-webkit-outer-spin-button,
+.input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 .input:focus {
@@ -69,54 +81,37 @@
   cursor: pointer;
   margin: 10px;
   margin-bottom: 12px;
-  width: 80px; /* Adjust width as needed */
-  outline: none;
-  border: none;
-  cursor: pointer;
+  width: 80px;
 }
 
 @media (min-width: 900px) {
   .formContainer {
-    background-color: #001f3f;
-    position: absolute; /* Absolute positioning within .app-container */
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%; /* Full width within .app-container */
+    width: 29.3vw;
     border-radius: 0.25rem;
-    overflow-y: hidden;
-    margin: 0;
-    height: 350px; /* Ensure this matches your design needs */
+    border-bottom-left-radius: 2.7rem;
+    border-bottom-right-radius: 2.7rem;
+    height: 350px;
   }
 }
 
 .buttonRed {
   background-color: #ff4136;
-  /* Red */
   color: white;
-  outline: none;
-  border: none;
-  cursor: pointer;
 }
 
 .buttonRed:hover {
   background-color: #ff851b;
-  /* Orange */
-  outline: none;
-  border: none;
-  cursor: pointer;
 }
 
 .buttonGreen {
   background-color: #2ecc40;
-  /* Green */
   color: white;
-  outline: none;
-  border: none;
-  cursor: pointer;
 }
 
 .buttonGreen:hover {
   background-color: #28a745;
-  /* Dark Green */
+}
+
+.cancelBtn {
+  margin-bottom: 10px;
 }

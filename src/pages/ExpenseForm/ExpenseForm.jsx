@@ -1,93 +1,92 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from './ExpenseForm.module.css';
-import axios from 'axios';
 
-const ExpenseForm = ({ addExpense, editIndex, expenses, updateExpense, cancelEdit }) => {
-  const navigate = useNavigate();
-
- 
-  const [expense, setExpense] = useState({
-    description: '',
-    amount: '',
-    date: new Date().toLocaleString()
-  });
-
-  useEffect(() => {
-    if (editIndex !== null && expenses[editIndex]) {
-      const { description, amount } = expenses[editIndex];
-      setExpense({ description, amount });
-    } else {
-      setExpense({
+const ExpenseForm = ({ addExpense, updateExpense, cancelEdit, editIndex, existingExpense }) => {
+    const [expense, setExpense] = useState({
         description: '',
         amount: ''
-      });
-    }
-  }, [editIndex, expenses]);
+    });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setExpense({ ...expense, [name]: value });
-  };
+    useEffect(() => {
+        if (existingExpense) {
+            setExpense({
+                description: existingExpense.description,
+                amount: existingExpense.amount,
+            });
+        }
+    }, [existingExpense]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (editIndex !== null) {
-        await axios.patch(`https://wallet-wings.onrender.com/api/transactions/${expenses[editIndex]._id}`, expense);
-        updateExpense(expense);
-      } else {
-        const response = await axios.post('https://wallet-wings.onrender.com/api/transactions/', { userId: JSON.parse(localStorage.getItem('userData')).user._id, expense });
-        addExpense(response.data);
-      }
-      navigate('/');
-    } catch (error) {
-      console.error('Error submitting expense:', error);
-    }
-  };
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setExpense((prevExpense) => ({
+            ...prevExpense,
+            [name]: value
+        }));
+    };
 
-  return (
-    <div className={styles.formContainer}>
-      
-      <div className={styles.innerFormContainer}>
-      <button type="button" onClick={cancelEdit} className={`${styles.button} ${styles.buttonRed}`}>
-        Cancel
-      </button>
-      <h1 className={styles.formTitle}>{editIndex !== null ? 'Edit Expense' : 'Add Expenditure'}</h1>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.formGroup}>
-          <label htmlFor="description" className={styles.label}>Description</label>
-          <input
-            type="text"
-            id="description"
-            name="description"
-            value={expense.description}
-            onChange={handleInputChange}
-            className={styles.input}
-            required
-          />
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const currentDateTime = {
+            date: new Date().toLocaleDateString(),
+            time: new Date().toLocaleTimeString(),
+        };
+        if (editIndex !== null) {
+            updateExpense({ ...expense, ...currentDateTime });
+        } else {
+            addExpense({ ...expense, ...currentDateTime });
+        }
+        setExpense({
+            description: '',
+            amount: ''
+        });
+    };
+
+    return (
+        <div className={styles.formContainer}>
+            <div className={styles.innerFormContainer}>
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <div className={styles.formTitle}>
+                        {editIndex !== null ? 'Edit Expense' : 'Add Expense'}
+                    </div>
+                    <div className={styles.cancelBtn}>
+                    <button type="button" className={`${styles.button} ${styles.buttonRed}`} onClick={cancelEdit}>
+                            Cancel
+                        </button>
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="description" className={styles.label}>Description</label>
+                        <input
+                            type="text"
+                            id="description"
+                            name="description"
+                            value={expense.description}
+                            onChange={handleChange}
+                            className={styles.input}
+                            required
+                        />
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="amount" className={styles.label}>Amount</label>
+                        <input
+                            type="number"
+                            id="amount"
+                            name="amount"
+                            value={expense.amount}
+                            onChange={handleChange}
+                            className={styles.input}
+                            required
+                        />
+                    </div>
+                    <div className={styles.buttonContainer}>
+                        <button type="submit" className={`${styles.button} ${styles.buttonGreen}`}>
+                            {editIndex !== null ? 'Update' : 'Add'}
+                        </button>
+                       
+                    </div>
+                </form>
+            </div>
         </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="amount" className={styles.label}>Amount</label>
-          <input
-            type="number"
-            id="amount"
-            name="amount"
-            value={expense.amount}
-            onChange={handleInputChange}
-            className={styles.input}
-            required
-          />
-        </div>
-        <div className={styles.buttonContainer}>
-          <button type="submit" className={`${styles.button} ${styles.buttonGreen}`}>
-            {editIndex !== null ? 'Update' : 'Add'}
-          </button>
-        </div>
-      </form>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default ExpenseForm;
