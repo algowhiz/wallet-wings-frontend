@@ -23,7 +23,15 @@ const App = () => {
                                 setIsLoggedIn={setIsLoggedIn}
                             />
                         ) : (
-                            <Auth setIsLoggedIn={setIsLoggedIn}/>
+                            <Unauthorized
+                            code={'404'}
+                            text1={'Page Not Found'}
+                            text3={'This Page does not exist'}
+                            text4={'Click here'}
+                            text5={'to go to the '}
+                            text6={'Login page'}
+                            route={'/auth'}
+                        />
                         )
                     }
                 />
