@@ -17,35 +17,33 @@ const Home = ({ setIsLoggedIn, isLoggedIn }) => {
     const [editIndex, setEditIndex] = useState(null);
     const [showExpenseForm, setShowExpenseForm] = useState(false);
     const [chunkSize, setChunkSize] = useState(5);
-    const [currentIndex, setCurrentIndex] = useState(chunkSize);
+    const [currentIndex, setCurrentIndex] = useState(0); // Starting index for fetching transactions
     const [isFetching, setIsFetching] = useState(false);
     const userId = JSON.parse(localStorage.getItem('userData'))?.user?._id;
 
-
     useEffect(() => {
-        fetchTransactions(0, chunkSize);
-    }, [chunkSize]);
+        fetchTransactions(0, chunkSize); // Fetch the initial chunk of transactions
+    }, []);
 
-   
     const handleScroll = useCallback(() => {
-        if (isFetching || window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) {
-            return;
+        if (isFetching) return;
+
+        if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.scrollHeight - 10) {
+            fetchMoreTransactions();
         }
-        fetchMoreTransactions();
-    }, [isFetching, currentIndex]);
+    }, [isFetching]);
 
     useEffect(() => {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, [handleScroll]);
 
-   
     const fetchTransactions = async (skip, limit) => {
         try {
             setLoading(true);
-            const response = await axios.get(`https://wallet-wings.onrender.com/api/transactions/${userId}?skip=${skip}&limit=${limit}`);
+            const response = await axios.get(`http://localhost:5000/api/transactions/${userId}?skip=${skip}&limit=${limit}`);
             setExpenses(prevExpenses => [...prevExpenses, ...response.data]);
-            setCurrentIndex(prevIndex => prevIndex + limit);
+            setCurrentIndex(skip + limit);
         } catch (error) {
             console.error('Error fetching transactions:', error);
         } finally {
@@ -63,18 +61,15 @@ const Home = ({ setIsLoggedIn, isLoggedIn }) => {
             });
     };
 
-   
     const handleLogout = () => {
         localStorage.removeItem('userData');
         navigate('/auth');
     };
 
-   
     const handleDownload = () => {
         downloadCSV(expenses);
     };
 
-    
     const handleUpload = async (event) => {
         const file = event.target.files[0];
         if (!file) return;
@@ -90,7 +85,7 @@ const Home = ({ setIsLoggedIn, isLoggedIn }) => {
                     return;
                 }
 
-                const response = await axios.post('https://wallet-wings.onrender.com/api/transactions/bulk', {
+                await axios.post('https://wallet-wings.onrender.com/api/transactions/bulk', {
                     userId: userId,
                     transactions: transactions
                 });
@@ -102,7 +97,6 @@ const Home = ({ setIsLoggedIn, isLoggedIn }) => {
         reader.readAsText(file);
     };
 
-  
     const handleDelete = async (index) => {
         const transactionId = expenses[index]._id;
 
@@ -120,13 +114,11 @@ const Home = ({ setIsLoggedIn, isLoggedIn }) => {
         setConfirmDeleteIndex(null);
     };
 
- 
     const editExpense = (index) => {
         setEditIndex(index);
         setShowExpenseForm(true);
     };
 
-  
     const updateExpense = (updatedExpense) => {
         const updatedExpenses = [...expenses];
         const currentDateTime = {
@@ -140,14 +132,12 @@ const Home = ({ setIsLoggedIn, isLoggedIn }) => {
         setShowExpenseForm(false);
     };
 
-  
     const addExpense = (expense) => {
         const newExpenses = [...expenses, expense];
         setExpenses(newExpenses);
         setShowExpenseForm(false);
     };
 
-  
     const cancelEdit = () => {
         setEditIndex(null);
         setShowExpenseForm(false);
@@ -162,20 +152,13 @@ const Home = ({ setIsLoggedIn, isLoggedIn }) => {
                     <h1 className={styles.title}>Home Finance App</h1>
                 </header>
                 <div className={styles.buttonContainerRightSide}>
-                    <button
-                        onClick={handleLogout}
-                        className={styles.button}
-                    >
+                    <button onClick={handleLogout} className={styles.button}>
                         Logout
                     </button>
                 </div>
-                {expenses?.length > 0 && (
+                {expenses.length > 0 && (
                     <div className={styles.downloadCSV}>
-                        <button
-                            type="button"
-                            onClick={handleDownload}
-                            className={styles.csv}
-                        >
+                        <button type="button" onClick={handleDownload} className={styles.csv}>
                             <p>CSV</p><p><MdFileDownload size={27} /></p>
                         </button>
                         <input type="file" accept=".csv" onChange={handleUpload} style={{ display: 'none' }} id="upload-input" />
@@ -184,18 +167,17 @@ const Home = ({ setIsLoggedIn, isLoggedIn }) => {
                         </label>
                     </div>
                 )}
-                {!expenses.length > 0 && <div className={styles.buttonContainerRightSide}>
-                    <button
-                        onClick={() => setShowExpenseForm(true)}
-                        className={styles.button}
-                    >
-                        Add Transaction
-                    </button>
-                    <input type="file" accept=".csv" onChange={handleUpload} style={{ display: 'none' }} id="upload-input" />
-                    <label htmlFor="upload-input" className={styles.uploadCSV}>
-                        <MdFileUpload size={27} /><p> CSV</p>
-                    </label>
-                </div>}
+                {!expenses.length > 0 && (
+                    <div className={styles.buttonContainerRightSide}>
+                        <button onClick={() => setShowExpenseForm(true)} className={styles.button}>
+                            Add Transaction
+                        </button>
+                        <input type="file" accept=".csv" onChange={handleUpload} style={{ display: 'none' }} id="upload-input" />
+                        <label htmlFor="upload-input" className={styles.uploadCSV}>
+                            <MdFileUpload size={27} /><p> CSV</p>
+                        </label>
+                    </div>
+                )}
                 <div className={styles.expenseContainer}>
                     {expenses.length > 0 ? (
                         expenses.map((expense, index) => (
@@ -224,10 +206,10 @@ const Home = ({ setIsLoggedIn, isLoggedIn }) => {
                 </div>
                 {totalExpense !== 0 && (
                     <div className={styles.totalExpense}>
-                        <p>Total Expense: ₹ {totalExpense.toLocaleString()}</p>
+                        Total Expense: ₹ {totalExpense.toLocaleString()}
                     </div>
                 )}
-                {expenses.length > 0 && <div className={styles.buttonContainer}>
+                 {expenses.length > 0 && <div className={styles.buttonContainer}>
                     <button
                         onClick={() => setShowExpenseForm(true)}
                         className={styles.button}
@@ -259,17 +241,9 @@ const Home = ({ setIsLoggedIn, isLoggedIn }) => {
                         />
                     </div>
                 )}
-            </div> :
-            <Unauthorized
-                code={'401'}
-                text1={'Unauthorized'}
-                text2={'Access Denied'}
-                text3={'You are not authorized to access this page'}
-                text4={'Click here'}
-                text5={'to go to the '}
-                text6={'Login page'}
-                route={'/auth'}
-            />
+            </div>
+            :
+            <Unauthorized />
     );
 };
 
