@@ -41,7 +41,7 @@ const Home = ({ setIsLoggedIn, isLoggedIn }) => {
     const fetchTransactions = async (skip, limit) => {
         try {
             setLoading(true);
-            const response = await axios.get(`http://localhost:5000/api/transactions/${userId}?skip=${skip}&limit=${limit}`);
+            const response = await axios.get(`https://wallet-wings.onrender.com/api/transactions/${userId}?skip=${skip}&limit=${limit}`);
             setExpenses(prevExpenses => [...prevExpenses, ...response.data]);
             setCurrentIndex(skip + limit);
         } catch (error) {
