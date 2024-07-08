@@ -35,6 +35,7 @@ const Home = ({ setIsLoggedIn, isLoggedIn }) => {
 
     useEffect(() => {
         window.addEventListener('scroll', handleScroll);
+         return () => window.removeEventListener('scroll', handleScroll);
     }, [handleScroll]);
 
     const fetchTransactions = async (skip, limit) => {
